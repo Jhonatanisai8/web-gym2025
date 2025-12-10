@@ -4,12 +4,12 @@
  * Archivo principal - Router del sistema
  */
 
+// Cargar configuración
+require_once 'config/config.php';
+
 // Iniciar sesión
 session_name(SESSION_NAME);
 session_start();
-
-// Cargar configuración
-require_once 'config/config.php';
 
 // Obtener la URL
 $url = isset($_GET['url']) ? rtrim($_GET['url'], '/') : 'auth/login';
