@@ -30,6 +30,27 @@ class Cliente extends Model
         return $this->query($sql)->fetchAll();
     }
 
+    public function getPaginatedWithMembership($limit, $offset)
+    {
+        $sql = "
+            SELECT 
+                c.*,
+                cm.id as membresia_activa_id,
+                cm.fecha_inicio,
+                cm.fecha_fin,
+                cm.estado as membresia_estado,
+                m.nombre as membresia_nombre
+            FROM clientes c
+            LEFT JOIN cliente_membresias cm ON c.id = cm.cliente_id AND cm.estado = 'activa'
+            LEFT JOIN membresias m ON cm.membresia_id = m.id
+            ORDER BY c.created_at DESC
+            LIMIT ? OFFSET ?
+        ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$limit, $offset]);
+        return $stmt->fetchAll();
+    }
+
     /**
      * Busca cliente por DNI
      */
