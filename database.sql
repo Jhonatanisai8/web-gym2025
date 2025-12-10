@@ -148,7 +148,7 @@ INSERT INTO roles (nombre, descripcion) VALUES
 -- Insertar usuario administrador por defecto
 -- Password: admin123 (hasheado con password_hash)
 INSERT INTO usuarios (nombre, email, password, rol_id) VALUES
-('Administrador', 'admin@gimnasio.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1);
+('Administrador', 'admin@gimnasio.com', '$2y$12$63Gq3BdRtMUEHqCrNG4Emu6NSP8QqtWXx6hPCg6vYDoUJtViupyJe', 1);
 
 -- Insertar membresías de ejemplo
 INSERT INTO membresias (nombre, descripcion, duracion_dias, precio) VALUES

@@ -5,7 +5,7 @@
  */
 
 // URL base del proyecto
-define('BASE_URL', 'http://localhost/web-gym/');
+define('BASE_URL', 'http://web-gym.test/');
 
 // Rutas del sistema
 define('ROOT_PATH', dirname(__DIR__) . '/');
