@@ -23,11 +23,32 @@ document.addEventListener('DOMContentLoaded', function () {
     // Active navigation highlighting
     const currentPath = window.location.pathname;
     const navItems = document.querySelectorAll('.nav-item');
+    
+    // Remove all active classes first
+    navItems.forEach(nav => nav.classList.remove('active'));
+    
+    // Find and activate the matching nav item
+    let matched = false;
     navItems.forEach(item => {
-        if (item.getAttribute('href') && currentPath.includes(item.getAttribute('href'))) {
-            navItems.forEach(nav => nav.classList.remove('active'));
-            item.classList.add('active');
+        const href = item.getAttribute('href');
+        if (href) {
+            // Extract the route from the href (e.g., 'clientes', 'dashboard')
+            const route = href.split('/').filter(Boolean).pop();
+            
+            // Check if current path includes this route
+            if (route && currentPath.includes(route)) {
+                item.classList.add('active');
+                matched = true;
+            }
         }
     });
+    
+    // If no match found, activate dashboard (default)
+    if (!matched) {
+        const dashboardItem = document.querySelector('.nav-item[href*="dashboard"]');
+        if (dashboardItem) {
+            dashboardItem.classList.add('active');
+        }
+    }
 
 });

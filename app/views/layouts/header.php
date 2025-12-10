@@ -22,7 +22,7 @@
             </div>
 
             <nav class="sidebar-nav">
-                <a href="<?= BASE_URL ?>dashboard" class="nav-item active">
+                <a href="<?= BASE_URL ?>dashboard" class="nav-item">
                     <img src="<?= BASE_URL ?>public/img/Dashboard.png" alt="Dashboard" class="nav-icon">
                     Dashboard
                 </a>
