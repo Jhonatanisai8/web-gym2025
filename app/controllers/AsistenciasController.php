@@ -22,12 +22,31 @@ class AsistenciasController extends Controller
     public function index()
     {
         $fecha = $this->getGet('fecha', date('Y-m-d'));
-        $asistencias = $this->asistenciaModel->getPorFecha($fecha);
+        $page = (int)$this->getGet('page', 1);
+
+        if ($page < 1) {
+            $page = 1;
+        }
+
+        $perPage = 20;
+        $total = (int)$this->asistenciaModel->countPorFecha($fecha);
+        $totalPages = max(1, (int)ceil($total / $perPage));
+
+        if ($page > $totalPages) {
+            $page = $totalPages;
+        }
+
+        $offset = ($page - 1) * $perPage;
+        $asistencias = $this->asistenciaModel->getPorFechaPaginado($fecha, $perPage, $offset);
 
         $data = [
             'title' => 'Control de Asistencias',
             'asistencias' => $asistencias,
-            'fecha' => $fecha
+            'fecha' => $fecha,
+            'page' => $page,
+            'perPage' => $perPage,
+            'total' => $total,
+            'totalPages' => $totalPages
         ];
 
         $this->view('asistencias/index', $data);

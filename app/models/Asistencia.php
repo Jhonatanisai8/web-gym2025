@@ -64,6 +64,43 @@ class Asistencia extends Model
     }
 
     /**
+     * Cuenta asistencias por fecha
+     */
+    public function countPorFecha($fecha)
+    {
+        $stmt = $this->db->prepare("
+            SELECT COUNT(*) as total
+            FROM asistencias
+            WHERE DATE(fecha_hora) = ?
+        ");
+        $stmt->execute([$fecha]);
+        $result = $stmt->fetch();
+        return (int)$result['total'];
+    }
+
+    /**
+     * Obtiene asistencias por fecha con paginación
+     */
+    public function getPorFechaPaginado($fecha, $limit, $offset)
+    {
+        $stmt = $this->db->prepare("
+            SELECT a.*, 
+                   c.nombre, 
+                   c.apellido, 
+                   c.dni,
+                   u.nombre as registrado_por
+            FROM asistencias a
+            INNER JOIN clientes c ON a.cliente_id = c.id
+            INNER JOIN usuarios u ON a.usuario_id = u.id
+            WHERE DATE(a.fecha_hora) = ?
+            ORDER BY a.fecha_hora DESC
+            LIMIT ? OFFSET ?
+        ");
+        $stmt->execute([$fecha, $limit, $offset]);
+        return $stmt->fetchAll();
+    }
+
+    /**
      * Obtiene estadísticas de asistencias
      */
     public function getEstadisticas($fechaInicio, $fechaFin)

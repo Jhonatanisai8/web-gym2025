@@ -117,5 +117,98 @@ class MembresiasController extends Controller
         }
         $this->redirect('membresias');
     }
-}
 
+    public function asignar($clienteId)
+    {
+        // Verificar que el cliente existe
+        $clienteModel = $this->model('Cliente');
+        $cliente = $clienteModel->getById($clienteId);
+
+        if (!$cliente) {
+            $_SESSION['error'] = 'Cliente no encontrado';
+            $this->redirect('clientes');
+        }
+
+        // Obtener todas las membresías activas
+        $membresias = $this->membresiaModel->query(
+            "SELECT * FROM membresias WHERE estado = 'activo' ORDER BY nombre"
+        )->fetchAll();
+
+        $data = [
+            'title' => 'Asignar Membresía',
+            'cliente' => $cliente,
+            'membresias' => $membresias,
+            'errors' => [],
+            'old' => []
+        ];
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $membresiaId = (int)$this->getPost('membresia_id');
+            $fechaInicio = $this->getPost('fecha_inicio');
+            $metodoPago = $this->getPost('metodo_pago');
+
+            $errors = [];
+            if (!$membresiaId) $errors[] = 'Debe seleccionar una membresía';
+            if (!$fechaInicio) $errors[] = 'La fecha de inicio es obligatoria';
+            if (!$metodoPago) $errors[] = 'El método de pago es obligatorio';
+
+            if (empty($errors)) {
+                // Obtener la membresía seleccionada
+                $membresia = $this->membresiaModel->getById($membresiaId);
+
+                if ($membresia) {
+                    try {
+
+                        // Calcular fecha de fin
+                        $inicio = new DateTime($fechaInicio);
+                        $fin = clone $inicio;
+                        $fin->modify('+' . $membresia['duracion_dias'] . ' days');
+
+                        // Desactivar membresías anteriores del cliente
+                        $this->membresiaModel->query(
+                            "UPDATE cliente_membresias SET estado = 'vencida' 
+                             WHERE cliente_id = ? AND estado = 'activa'",
+                            [$clienteId]
+                        );
+
+                        // Insertar nueva membresía
+                        $this->membresiaModel->query(
+                            "INSERT INTO cliente_membresias 
+                             (cliente_id, membresia_id, fecha_inicio, fecha_fin, estado) 
+                             VALUES (?, ?, ?, ?, 'activa')",
+                            [
+                                $clienteId,
+                                $membresiaId,
+                                $inicio->format('Y-m-d'),
+                                $fin->format('Y-m-d')
+                            ]
+                        );
+
+                        // Registrar el pago
+                        $pagoModel = $this->model('Pago');
+                        $pagoModel->insert([
+                            'cliente_id' => $clienteId,
+                            'concepto' => 'Membresía: ' . $membresia['nombre'],
+                            'monto' => $membresia['precio'],
+                            'metodo_pago' => $metodoPago,
+                            'fecha_pago' => date('Y-m-d H:i:s'),
+                            'usuario_id' => $_SESSION['user_id']
+                        ]);
+
+                        $_SESSION['success'] = 'Membresía asignada correctamente';
+                        $this->redirect('clientes/ver/' . $clienteId);
+                    } catch (Exception $e) {
+                        $errors[] = 'Error al asignar la membresía: ' . $e->getMessage();
+                    }
+                } else {
+                    $errors[] = 'Membresía no encontrada';
+                }
+            }
+
+            $data['errors'] = $errors;
+            $data['old'] = $_POST;
+        }
+
+        $this->view('membresias/asignar', $data);
+    }
+}

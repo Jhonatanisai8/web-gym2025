@@ -3,15 +3,15 @@
 <div class="page-header">
     <div class="page-header-left">
         <h1><?= $title ?></h1>
-        <p>Inventario de productos</p>
+        <p>Registro de ventas de productos</p>
     </div>
     <div class="page-header-right">
-        <a href="<?= BASE_URL ?>productos/crear" class="btn btn-primary">
+        <a href="<?= BASE_URL ?>ventas/crear" class="btn btn-primary">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="12" y1="5" x2="12" y2="19" />
                 <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
-            Nuevo Producto
+            Nueva Venta
         </a>
     </div>
 </div>
@@ -27,54 +27,47 @@
 
 <div class="card">
     <div class="card-header">
-        <h2>Lista de Productos</h2>
+        <h2>Lista de Ventas</h2>
     </div>
     <div class="card-body">
         <div class="table-responsive">
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Imagen</th>
-                        <th>Nombre</th>
-                        <th>Categoría</th>
-                        <th>Precio</th>
-                        <th>Stock</th>
-                        <th>Estado</th>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Cliente</th>
+                        <th>Total</th>
+                        <th>Método Pago</th>
+                        <th>Vendedor</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if (empty($productos)): ?>
+                    <?php if (empty($ventas)): ?>
                         <tr>
-                            <td colspan="7" class="text-center">No hay productos</td>
+                            <td colspan="7" class="text-center">No hay ventas registradas</td>
                         </tr>
-                        <?php else: foreach ($productos as $p): ?>
+                        <?php else: foreach ($ventas as $v): ?>
                             <tr>
-                                <td>
-                                    <?php if (!empty($p['imagen'])): ?>
-                                        <img src="<?= BASE_URL ?>public/uploads/<?= $p['imagen'] ?>" alt="" class="table-avatar">
-                                    <?php else: ?>
-                                        <div class="table-avatar-placeholder"><?= strtoupper(substr($p['nombre'], 0, 1)) ?></div>
-                                    <?php endif; ?>
-                                </td>
-                                <td><?= htmlspecialchars($p['nombre']) ?></td>
-                                <td><?= htmlspecialchars($p['categoria_nombre']) ?></td>
-                                <td>S/ <?= number_format($p['precio'], 2) ?></td>
-                                <td><?= (int)$p['stock'] ?></td>
-                                <td><span class="badge badge-<?= $p['estado'] === 'activo' ? 'success' : 'danger' ?>"><?= ucfirst($p['estado']) ?></span></td>
+                                <td><strong>#<?= $v['id'] ?></strong></td>
+                                <td><?= date('d/m/Y H:i', strtotime($v['fecha_venta'])) ?></td>
+                                <td><?= $v['cliente_nombre'] ?: '<em>Cliente general</em>' ?></td>
+                                <td><strong>S/ <?= number_format($v['total'], 2) ?></strong></td>
+                                <td><span class="badge badge-info"><?= ucfirst($v['metodo_pago']) ?></span></td>
+                                <td><?= htmlspecialchars($v['usuario_nombre']) ?></td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="<?= BASE_URL ?>productos/editar/<?= $p['id'] ?>" class="btn btn-sm btn-primary" title="Editar">
+                                        <a href="<?= BASE_URL ?>ventas/ver/<?= $v['id'] ?>" class="btn btn-sm btn-primary" title="Ver detalle">
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                <circle cx="12" cy="12" r="3" />
                                             </svg>
                                         </a>
-                                        <a href="<?= BASE_URL ?>productos/cambiarEstado/<?= $p['id'] ?>" class="btn btn-sm btn-<?= $p['estado'] === 'activo' ? 'danger' : 'success' ?>" data-confirm="¿Cambiar estado?" title="Estado">
+                                        <a href="<?= BASE_URL ?>ventas/eliminar/<?= $v['id'] ?>" class="btn btn-sm btn-danger" data-confirm="¿Eliminar esta venta? Se restaurará el stock" title="Eliminar">
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <circle cx="12" cy="12" r="10" />
-                                                <line x1="15" y1="9" x2="9" y2="15" />
-                                                <line x1="9" y1="9" x2="15" y2="15" />
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                                             </svg>
                                         </a>
                                     </div>
@@ -89,11 +82,11 @@
         <?php if ($totalPaginas > 1): ?>
             <div class="pagination">
                 <div class="pagination-info">
-                    Mostrando <?= count($productos) ?> de <?= $totalProductos ?> productos
+                    Mostrando <?= count($ventas) ?> de <?= $totalVentas ?> ventas
                 </div>
                 <div class="pagination-controls">
                     <?php if ($paginaActual > 1): ?>
-                        <a href="<?= BASE_URL ?>productos?page=<?= $paginaActual - 1 ?>" class="btn btn-sm btn-secondary">
+                        <a href="<?= BASE_URL ?>ventas?page=<?= $paginaActual - 1 ?>" class="btn btn-sm btn-secondary">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="15 18 9 12 15 6"></polyline>
                             </svg>
@@ -110,12 +103,12 @@
 
                     <div class="pagination-numbers">
                         <?php
-                        $rango = 2; // Mostrar 2 páginas antes y después de la actual
+                        $rango = 2;
                         $inicio = max(1, $paginaActual - $rango);
                         $fin = min($totalPaginas, $paginaActual + $rango);
 
                         if ($inicio > 1): ?>
-                            <a href="<?= BASE_URL ?>productos?page=1" class="btn btn-sm btn-secondary">1</a>
+                            <a href="<?= BASE_URL ?>ventas?page=1" class="btn btn-sm btn-secondary">1</a>
                             <?php if ($inicio > 2): ?>
                                 <span class="pagination-ellipsis">...</span>
                             <?php endif;
@@ -125,7 +118,7 @@
                             if ($i == $paginaActual): ?>
                                 <span class="btn btn-sm btn-primary active"><?= $i ?></span>
                             <?php else: ?>
-                                <a href="<?= BASE_URL ?>productos?page=<?= $i ?>" class="btn btn-sm btn-secondary"><?= $i ?></a>
+                                <a href="<?= BASE_URL ?>ventas?page=<?= $i ?>" class="btn btn-sm btn-secondary"><?= $i ?></a>
                             <?php endif;
                         endfor;
 
@@ -133,12 +126,12 @@
                             if ($fin < $totalPaginas - 1): ?>
                                 <span class="pagination-ellipsis">...</span>
                             <?php endif; ?>
-                            <a href="<?= BASE_URL ?>productos?page=<?= $totalPaginas ?>" class="btn btn-sm btn-secondary"><?= $totalPaginas ?></a>
+                            <a href="<?= BASE_URL ?>ventas?page=<?= $totalPaginas ?>" class="btn btn-sm btn-secondary"><?= $totalPaginas ?></a>
                         <?php endif; ?>
                     </div>
 
                     <?php if ($paginaActual < $totalPaginas): ?>
-                        <a href="<?= BASE_URL ?>productos?page=<?= $paginaActual + 1 ?>" class="btn btn-sm btn-secondary">
+                        <a href="<?= BASE_URL ?>ventas?page=<?= $paginaActual + 1 ?>" class="btn btn-sm btn-secondary">
                             Siguiente
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="9 18 15 12 9 6"></polyline>

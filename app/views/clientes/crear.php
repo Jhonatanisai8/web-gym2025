@@ -119,5 +119,5 @@
         border-top: 1px solid var(--border-color);
     }
 </style>
-
+    
 <?php require_once APP_PATH . 'views/layouts/footer.php'; ?>

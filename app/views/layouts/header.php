@@ -14,9 +14,7 @@
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M6 6h4v12H6zM14 6h4v12h-4zM2 9h2M20 9h2M2 15h2M20 15h2" />
-                    </svg>
+                    <img src="<?= BASE_URL ?>public/img/logo-gym.jpg" alt="">
                 </div>
                 <h2>Gimnasio</h2>
             </div>
@@ -50,6 +48,11 @@
                 <a href="<?= BASE_URL ?>productos" class="nav-item">
                     <img src="<?= BASE_URL ?>public/img/Productos.png" alt="Productos" class="nav-icon">
                     Productos
+                </a>
+
+                <a href="<?= BASE_URL ?>ventas" class="nav-item">
+                    <img src="<?= BASE_URL ?>public/img/Ventas.png" alt="Ventas" class="nav-icon">
+                    Ventas
                 </a>
 
                 <?php if ($_SESSION['rol_nombre'] === 'Administrador'): ?>

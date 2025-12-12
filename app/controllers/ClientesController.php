@@ -20,11 +20,15 @@ class ClientesController extends Controller
     public function index()
     {
         $page = (int)$this->getGet('page', 1);
-        if ($page < 1) { $page = 1; }
+        if ($page < 1) {
+            $page = 1;
+        }
         $perPage = 10;
         $total = (int)$this->clienteModel->count();
         $totalPages = max(1, (int)ceil($total / $perPage));
-        if ($page > $totalPages) { $page = $totalPages; }
+        if ($page > $totalPages) {
+            $page = $totalPages;
+        }
         $offset = ($page - 1) * $perPage;
         $clientes = $this->clienteModel->getPaginatedWithMembership($perPage, $offset);
 

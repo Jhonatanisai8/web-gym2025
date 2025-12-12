@@ -14,10 +14,24 @@ class ProductosController extends Controller
 
     public function index()
     {
-        $productos = $this->productoModel->getAllWithCategoria();
+        // Configuración de paginación
+        $productosPorPagina = 10;
+        $paginaActual = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+        $offset = ($paginaActual - 1) * $productosPorPagina;
+
+        // Obtener productos paginados
+        $productos = $this->productoModel->getAllWithCategoriaPaginated($productosPorPagina, $offset);
+
+        // Calcular total de páginas
+        $totalProductos = $this->productoModel->countAll();
+        $totalPaginas = ceil($totalProductos / $productosPorPagina);
+
         $data = [
             'title' => 'Productos',
-            'productos' => $productos
+            'productos' => $productos,
+            'paginaActual' => $paginaActual,
+            'totalPaginas' => $totalPaginas,
+            'totalProductos' => $totalProductos
         ];
         $this->view('productos/index', $data);
     }
@@ -145,13 +159,12 @@ class ProductosController extends Controller
 
     private function uploadImagen($file)
     {
-        $allowed = ['jpg','jpeg','png','gif'];
+        $allowed = ['jpg', 'jpeg', 'png', 'gif'];
         $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         if (!in_array($ext, $allowed)) return false;
-        $filename = uniqid().'_'.$file['name'];
+        $filename = uniqid() . '_' . $file['name'];
         $destination = UPLOAD_PATH . $filename;
         if (move_uploaded_file($file['tmp_name'], $destination)) return $filename;
         return false;
     }
 }
-
