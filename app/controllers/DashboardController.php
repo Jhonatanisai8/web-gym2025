@@ -23,12 +23,21 @@ class DashboardController extends Controller
         $stmt = $db->query("SELECT COUNT(*) as total FROM clientes WHERE estado = 'activo'");
         $clientesActivos = $stmt->fetch()['total'];
 
-        // Ingresos del mes actual
+        // Ingresos del mes actual (pagos de membresías + ventas de productos)
         $stmt = $db->query("
-            SELECT COALESCE(SUM(monto), 0) as total 
-            FROM pagos 
-            WHERE MONTH(fecha_pago) = MONTH(CURRENT_DATE()) 
-            AND YEAR(fecha_pago) = YEAR(CURRENT_DATE())
+            SELECT 
+                (
+                    SELECT COALESCE(SUM(monto), 0) 
+                    FROM pagos 
+                    WHERE MONTH(fecha_pago) = MONTH(CURRENT_DATE()) 
+                    AND YEAR(fecha_pago) = YEAR(CURRENT_DATE())
+                ) + 
+                (
+                    SELECT COALESCE(SUM(total), 0) 
+                    FROM ventas 
+                    WHERE MONTH(fecha_venta) = MONTH(CURRENT_DATE()) 
+                    AND YEAR(fecha_venta) = YEAR(CURRENT_DATE())
+                ) as total
         ");
         $ingresosMes = $stmt->fetch()['total'];
 
