@@ -172,7 +172,7 @@ class MembresiasController extends Controller
                         );
 
                         // Insertar nueva membresía
-                        $this->membresiaModel->query(
+                        $stmt = $this->membresiaModel->query(
                             "INSERT INTO cliente_membresias 
                              (cliente_id, membresia_id, fecha_inicio, fecha_fin, estado) 
                              VALUES (?, ?, ?, ?, 'activa')",
@@ -184,14 +184,17 @@ class MembresiasController extends Controller
                             ]
                         );
 
+                        // Obtener el ID de la membresía recién insertada
+                        $db = Database::getInstance()->getConnection();
+                        $clienteMembresiaId = $db->lastInsertId();
+
                         // Registrar el pago
                         $pagoModel = $this->model('Pago');
                         $pagoModel->insert([
                             'cliente_id' => $clienteId,
-                            'concepto' => 'Membresía: ' . $membresia['nombre'],
+                            'cliente_membresia_id' => $clienteMembresiaId,
                             'monto' => $membresia['precio'],
                             'metodo_pago' => $metodoPago,
-                            'fecha_pago' => date('Y-m-d H:i:s'),
                             'usuario_id' => $_SESSION['user_id']
                         ]);
 

@@ -16,7 +16,7 @@
                 <div class="logo">
                     <img src="<?= BASE_URL ?>public/img/logo-gym.jpg" alt="">
                 </div>
-                <h2>Gimnasio</h2>
+                <h2>...</h2>
             </div>
 
             <nav class="sidebar-nav">
@@ -51,7 +51,7 @@
                 </a>
 
                 <a href="<?= BASE_URL ?>ventas" class="nav-item">
-                    <img src="<?= BASE_URL ?>public/img/Ventas.png" alt="Ventas" class="nav-icon">
+                    <img src="<?= BASE_URL ?>public/img/icons8-ventas-50.png" alt="Ventas" class="nav-icon">
                     Ventas
                 </a>
 
